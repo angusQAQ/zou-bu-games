@@ -1,0 +1,23 @@
+---
+description: 更新走部遊戲內容後，在 zou-bu-games 倉庫建立可還原的存檔點並推上遠端
+globs: "{index.html,styles.css,game.js}"
+alwaysApply: true
+---
+
+# 走部遊戲存檔點
+
+改動 `index.html`、`styles.css` 或 `game.js` 的遊戲內容後，必須在 `/Users/anguschen/Cursor/zou-bu-games` 留下存檔點。
+
+1. 只提交這個倉庫。不要提交上層目錄 `/Users/anguschen/Cursor`。
+2. 提交說明用一句繁體中文，寫這次內容改了什麼。
+3. 打附註標籤，名稱用香港時間：`save/YYYYMMDD-HHMM`。標籤說明與提交說明相同。
+4. 把提交和標籤推上 `origin`。課室網址和遠端存檔要一起更新。
+5. 已推出的標籤不要改寫，也不要用 `commit --amend` 蓋掉舊存檔點。
+
+標籤名稱每次用當下香港時間，不要沿用舊名稱。
+
+```bash
+git tag -a save/YYYYMMDD-HHMM -m "一句說明這次改了什麼。"
+git push origin HEAD
+git push origin save/YYYYMMDD-HHMM
+```

@@ -22,8 +22,6 @@
     { char: '趙', part: '肖', wrong: ['小', '月', '有'] },
     { char: '趟', part: '尚', wrong: ['向', '同', '周'] },
     { char: '趨', part: '芻', wrong: ['勿', '匆', '勾'] },
-    { char: '趄', part: '且', wrong: ['目', '自', '旦'] },
-    { char: '趔', part: '列', wrong: ['歹', '\u5202', '夕'] },
   ];
   const ZOU_CHARS = BUILDS.map((b) => b.char);
 
@@ -415,17 +413,17 @@
   const drawItem = (team, all, idOf) => {
     const other = otherOf(team);
     const avoid = other.q ? other.q.target : null;
-    const blocked = (item) => {
-      const id = idOf(item);
-      return id === avoid || id === team.prev;
-    };
-    if (!team.deck.length || !team.deck.some((item) => !blocked(item))) {
+    const refill = () => {
       team.deck = shuffle(all).filter((item) => idOf(item) !== team.prev);
       if (!team.deck.length) team.deck = shuffle(all);
-    }
+    };
+    if (!team.deck.length) refill();
     let i = team.deck.findIndex((item) => idOf(item) !== avoid);
     if (i < 0) {
-      team.deck = shuffle(all);
+      const held = team.deck.slice();
+      refill();
+      const seen = new Set(held.map(idOf));
+      team.deck = held.concat(team.deck.filter((item) => !seen.has(idOf(item))));
       i = team.deck.findIndex((item) => idOf(item) !== avoid);
       if (i < 0) i = 0;
     }
