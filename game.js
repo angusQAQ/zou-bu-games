@@ -465,10 +465,9 @@
   };
 
   const choose = (team, btn, value) => {
-    if (S.phase !== 'play' || clock.paused || team.busy) return;
+    if (S.phase !== 'play' || clock.paused || team.busy || btn.disabled) return;
     team.busy = true;
     team.panel.classList.add('locked');
-
     const ok = value === team.q.answer;
     team.log.push({ ok, target: team.q.target, answer: team.q.answer, chosen: value });
     team.score += ok ? 1 : -1;
@@ -484,6 +483,7 @@
     btn.classList.remove('deal');
     btn.style.animationDelay = '';
     btn.classList.add(ok ? 'is-right' : 'is-wrong');
+    if (!ok) btn.disabled = true;
 
     let wait = 700;
     if (ok && S.game === 'race') {
@@ -498,7 +498,9 @@
     }
     after(wait, () => {
       team.busy = false;
-      if (S.phase === 'play') deal(team);
+      if (S.phase !== 'play') return;
+      if (ok) deal(team);
+      else team.panel.classList.remove('locked');
     });
   };
 
@@ -624,8 +626,25 @@
     setPaused(false);
 
     show('game');
-    startClock();
+    showHow(game);
+  };
 
+  const HOW = {
+    tug: ['四個字裡，選出含有「走」部的字。', '答對，本隊往後拉，並加一分。', '答錯可以再選，選對才換下一題。'],
+    race: ['題目是「走＋？」，選出正確的部件。', '答對，本隊向前跑，並看到組成的字。', '答錯可以再選，選對才換下一題。'],
+  };
+
+  const showHow = (game) => {
+    S.phase = 'how';
+    $('howTitle').textContent = game === 'tug' ? '拔河' : '賽跑';
+    $('howLines').innerHTML = HOW[game].map((line) => `<li>${line}</li>`).join('');
+    $('how').classList.add('show');
+  };
+
+  const startCountdown = () => {
+    $('how').classList.remove('show');
+    S.phase = 'ready';
+    startClock();
     [3, 2, 1].forEach((n, i) => {
       after(i * 1000, () => {
         const box = $('readyCount');
@@ -743,6 +762,7 @@
 
   const goMenu = () => {
     stopClock();
+    $('how').classList.remove('show');
     S.phase = 'idle';
     setPaused(false);
     show('menu');
@@ -776,7 +796,14 @@
     btn.classList.toggle('on', m);
   });
 
-  $('btnBack').addEventListener('click', goMenu);
+  $('howStart').addEventListener('click', () => {
+    if (S.phase === 'how') startCountdown();
+  });
+
+  $('btnBack').addEventListener('click', () => {
+    $('how').classList.remove('show');
+    goMenu();
+  });
   $('btnAgain').addEventListener('click', () => startGame(S.game));
   $('btnHome').addEventListener('click', goMenu);
 })();
