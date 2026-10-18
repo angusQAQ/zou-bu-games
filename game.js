@@ -6,7 +6,6 @@
   const INK = '#2b2622';
   const TEAM_NAME = { red: '紅隊', blue: '藍隊' };
 
-  const ZOU_CHARS = ['起', '趕', '超', '越', '趣'];
   const LOOKALIKES = ['建', '延'];
   const DISTRACTORS = [
     '這', '進', '道', '過', '還', '遠', '邊', '送', '通', '近',
@@ -18,7 +17,15 @@
     { char: '超', part: '召', wrong: ['刀', '口', '力'] },
     { char: '越', part: '\u6209', wrong: ['\u620A', '\u620C', '\u620D'] },
     { char: '趣', part: '取', wrong: ['耳', '又', '\u53CC'] },
+    { char: '赴', part: '卜', wrong: ['十', '下', '上'] },
+    { char: '趁', part: '\u3431', wrong: ['\u53C3', '\u5F61', '\u5C14'] },
+    { char: '趙', part: '肖', wrong: ['小', '月', '有'] },
+    { char: '趟', part: '尚', wrong: ['向', '同', '周'] },
+    { char: '趨', part: '芻', wrong: ['勿', '匆', '勾'] },
+    { char: '趄', part: '且', wrong: ['目', '自', '旦'] },
+    { char: '趔', part: '列', wrong: ['歹', '\u5202', '夕'] },
   ];
+  const ZOU_CHARS = BUILDS.map((b) => b.char);
 
   const TUG_STEP = 14;
   const TUG_LIMIT = 70;
@@ -390,6 +397,7 @@
     log: [],
     q: null,
     prev: null,
+    deck: [],
     busy: false,
     panel: $(id === 'red' ? 'panelRed' : 'panelBlue'),
   });
@@ -404,22 +412,34 @@
 
   // ---------- 題目 ----------
 
-  const deal = (team) => {
+  const drawItem = (team, all, idOf) => {
     const other = otherOf(team);
     const avoid = other.q ? other.q.target : null;
+    const blocked = (item) => {
+      const id = idOf(item);
+      return id === avoid || id === team.prev;
+    };
+    if (!team.deck.length || !team.deck.some((item) => !blocked(item))) {
+      team.deck = shuffle(all).filter((item) => idOf(item) !== team.prev);
+      if (!team.deck.length) team.deck = shuffle(all);
+    }
+    let i = team.deck.findIndex((item) => idOf(item) !== avoid);
+    if (i < 0) {
+      team.deck = shuffle(all);
+      i = team.deck.findIndex((item) => idOf(item) !== avoid);
+      if (i < 0) i = 0;
+    }
+    return team.deck.splice(i, 1)[0];
+  };
+
+  const deal = (team) => {
     if (S.game === 'tug') {
-      let pool = ZOU_CHARS.filter((c) => c !== avoid && c !== team.prev);
-      if (!pool.length) pool = ZOU_CHARS.filter((c) => c !== avoid);
-      if (!pool.length) pool = ZOU_CHARS;
-      const target = pick(pool);
+      const target = drawItem(team, ZOU_CHARS, (c) => c);
       const look = pick(LOOKALIKES);
       const rest = shuffle(DISTRACTORS.filter((c) => c !== look && c !== target)).slice(0, 2);
       team.q = { target, answer: target, options: shuffle([target, look, ...rest]) };
     } else {
-      let pool = BUILDS.filter((x) => x.char !== avoid && x.char !== team.prev);
-      if (!pool.length) pool = BUILDS.filter((x) => x.char !== avoid);
-      if (!pool.length) pool = BUILDS;
-      const b = pick(pool);
+      const b = drawItem(team, BUILDS, (x) => x.char);
       team.q = { target: b.char, answer: b.part, options: shuffle([b.part, ...b.wrong]) };
     }
     team.prev = team.q.target;
