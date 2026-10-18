@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>學習「走」部首</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="menu" class="screen is-active">
+      <h1 class="menu-title">學習「走」部首</h1>
+      <p class="menu-sub">選擇遊戲</p>
+      <div class="menu-cards">
+        <button type="button" class="card" data-game="tug">
+          <span class="card-art" id="cardTug"></span>
+          <span class="card-name">拔河</span>
+        </button>
+        <button type="button" class="card" data-game="race">
+          <span class="card-art" id="cardRace"></span>
+          <span class="card-name">賽跑</span>
+        </button>
+      </div>
+    </main>
+
+    <section id="game" class="screen">
+      <header class="topbar">
+        <div class="team-score red">
+          <span class="team-name">紅隊</span>
+          <span class="score" id="scoreRed">0</span>
+        </div>
+        <div class="controls">
+          <button type="button" class="ctrl" id="btnBack">返回</button>
+          <button type="button" class="ctrl" id="btnPause">暫停</button>
+        </div>
+        <div class="timer" id="timer">30</div>
+        <div class="controls">
+          <button type="button" class="ctrl" id="btnMute">靜音</button>
+        </div>
+        <div class="team-score blue">
+          <span class="score" id="scoreBlue">0</span>
+          <span class="team-name">藍隊</span>
+        </div>
+      </header>
+      <div class="arena">
+        <section class="panel red" id="panelRed" aria-label="紅隊"></section>
+        <section class="center" id="center">
+          <div class="stage" id="stage"></div>
+          <div class="confetti" id="confetti"></div>
+          <div class="gain" id="gain"></div>
+          <div class="banner" id="banner"></div>
+        </section>
+        <section class="panel blue" id="panelBlue" aria-label="藍隊"></section>
+        <div class="pause-veil" id="pauseVeil"><span>暫停</span></div>
+        <div class="ready-count" id="readyCount"></div>
+      </div>
+    </section>
+
+    <section id="summary" class="screen">
+      <div class="sum-wrap">
+        <p class="sum-game" id="sumGame"></p>
+        <h2 class="sum-result" id="sumResult"></h2>
+        <div class="sum-cols" id="sumCols"></div>
+        <div class="sum-actions">
+          <button type="button" class="big-btn" id="btnAgain">再玩一局</button>
+          <button type="button" class="big-btn ghost" id="btnHome">返回</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="game.js"></script>
+  </body>
+</html>

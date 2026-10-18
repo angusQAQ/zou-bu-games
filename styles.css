@@ -1,0 +1,1454 @@
+:root {
+  --ink: #2b2622;
+  --red: #e8433f;
+  --red-soft: #ffe6e2;
+  --blue: #3478e0;
+  --blue-soft: #e2eeff;
+  --gold: #ffd43b;
+  --green: #239a3b;
+  --kai: "Kaiti TC", "BiauKai", "標楷體", "STKaiti", "KaiTi", "DFKai-SB", serif;
+  --ui: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--ui);
+  color: var(--ink);
+  background: radial-gradient(circle at 20px 20px, #ffe7b0 3px, transparent 4px) 0 0 / 40px 40px, #fff4d9;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.screen {
+  display: none;
+  height: 100vh;
+}
+
+.screen.is-active {
+  display: flex;
+}
+
+/* ---------- 選單 ---------- */
+
+#menu {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+}
+
+.menu-title {
+  margin: 0;
+  font-family: var(--kai);
+  font-size: clamp(48px, 8vh, 108px);
+  letter-spacing: 0.06em;
+  color: #fff;
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 8px 0 var(--ink);
+}
+
+.menu-sub {
+  margin: 0;
+  font-size: clamp(26px, 4.5vh, 52px);
+  font-weight: 900;
+  background: #fff;
+  border: 5px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.1em 1.2em;
+}
+
+.menu-cards {
+  display: flex;
+  gap: 4vw;
+  margin-top: 2vh;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5vh;
+  width: min(36vw, 560px);
+  padding: 2vh 2vw 2.6vh;
+  background: #fff;
+  border: 6px solid var(--ink);
+  border-radius: 32px;
+  box-shadow: 0 12px 0 var(--ink);
+  transition: transform 0.12s;
+}
+
+.card:hover {
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+.card:active {
+  transform: translateY(6px);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.card-art {
+  display: block;
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 4px solid var(--ink);
+}
+
+.card-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.card-name {
+  font-size: clamp(40px, 7vh, 80px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  padding-left: 0.2em;
+}
+
+.card[data-game="tug"] .card-name {
+  color: var(--red);
+}
+
+.card[data-game="race"] .card-name {
+  color: var(--blue);
+}
+
+/* ---------- 遊戲版面 ---------- */
+
+#game {
+  flex-direction: column;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  align-items: center;
+  gap: 1.4vw;
+  padding: 1.2vh 1.6vw 0;
+}
+
+.team-score {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-weight: 900;
+  font-size: clamp(22px, 3.8vh, 46px);
+}
+
+.team-score.red {
+  --team: var(--red);
+}
+
+.team-score.blue {
+  --team: var(--blue);
+  justify-content: flex-end;
+}
+
+.team-name {
+  color: #fff;
+  background: var(--team);
+  padding: 0.1em 0.9em;
+  border-radius: 999px;
+  border: 4px solid var(--ink);
+}
+
+.score {
+  min-width: 2.4em;
+  text-align: center;
+  background: #fff;
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  padding: 0 0.3em;
+  font-size: 1.45em;
+  color: var(--team);
+  font-variant-numeric: tabular-nums;
+}
+
+.score.bump {
+  animation: bump 0.4s ease-out;
+}
+
+@keyframes bump {
+  40% {
+    transform: scale(1.3);
+  }
+}
+
+.timer {
+  --p: 1;
+  width: clamp(96px, 14vh, 160px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: clamp(44px, 7.6vh, 90px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  border: 6px solid var(--ink);
+  box-shadow: 0 8px 0 var(--ink);
+  background: radial-gradient(circle, #fff 56%, transparent 57%),
+    conic-gradient(var(--gold) calc(var(--p) * 1turn), #f3e6c2 0);
+}
+
+.timer.hurry {
+  color: #d62f2a;
+  background: radial-gradient(circle, #fff 56%, transparent 57%),
+    conic-gradient(#ff6b5e calc(var(--p) * 1turn), #f6d3cf 0);
+  animation: hurry 1s ease-in-out infinite;
+}
+
+@keyframes hurry {
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 0.8vw;
+}
+
+.ctrl {
+  font-size: clamp(18px, 2.6vh, 30px);
+  font-weight: 800;
+  padding: 0.4em 0.9em;
+  border-radius: 16px;
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+.ctrl:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.ctrl.on {
+  background: var(--gold);
+}
+
+.arena {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.32fr 1fr;
+  gap: 1.4vw;
+  padding: 1.6vh 1.6vw 2vh;
+}
+
+/* ---------- 題目區 ---------- */
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+  min-height: 0;
+  padding: 1.6vh 1.2vw 2.4vh;
+  border: 6px solid var(--team);
+  border-radius: 30px;
+  background: var(--team-soft);
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.14);
+}
+
+.panel.red {
+  --team: var(--red);
+  --team-soft: var(--red-soft);
+}
+
+.panel.blue {
+  --team: var(--blue);
+  --team-soft: var(--blue-soft);
+}
+
+.panel-tag {
+  align-self: center;
+  font-weight: 900;
+  font-size: clamp(22px, 3.4vh, 40px);
+  letter-spacing: 0.15em;
+  color: #fff;
+  background: var(--team);
+  padding: 0.1em 1em 0.1em 1.15em;
+  border-radius: 999px;
+  border: 4px solid var(--ink);
+}
+
+.prompt {
+  position: relative;
+  height: 27vh;
+  display: grid;
+  place-items: center;
+  font-family: var(--kai);
+  font-size: clamp(56px, 13vh, 170px);
+  line-height: 1;
+  background: #fff;
+  border: 5px solid var(--ink);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.prompt .eq {
+  display: flex;
+  align-items: center;
+  gap: 0.06em;
+  transition: opacity 0.25s;
+}
+
+.prompt .g {
+  display: inline-block;
+  transition: transform 0.45s cubic-bezier(0.5, 0, 0.3, 1), opacity 0.3s, border-color 0.3s;
+}
+
+.prompt .plus {
+  font-size: 0.7em;
+}
+
+.prompt .slot {
+  min-width: 1.1em;
+  text-align: center;
+  padding: 0.04em 0;
+  color: var(--team);
+  border: 5px dashed var(--team);
+  border-radius: 18px;
+}
+
+.prompt.merge .zou {
+  transform: translateX(0.5em);
+}
+
+.prompt.merge .plus {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.prompt.merge .slot {
+  transform: translateX(-0.5em);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.prompt.reveal .eq {
+  opacity: 0;
+}
+
+.prompt .result {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+  font-size: 1.15em;
+  opacity: 0;
+}
+
+.prompt.reveal .result {
+  animation: reveal 0.7s cubic-bezier(0.3, 1.7, 0.5, 1) forwards;
+}
+
+.prompt.reveal::before {
+  content: "";
+  position: absolute;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6b8 0 40%, transparent 70%);
+  animation: glow 0.8s ease-out forwards;
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.25) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes glow {
+  from {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0.9;
+  }
+}
+
+.options {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2vh 1.2vw;
+}
+
+.opt {
+  min-height: 0;
+  font-family: var(--kai);
+  font-size: clamp(48px, 11vh, 160px);
+  line-height: 1;
+  background: #fff;
+  border: 5px solid var(--ink);
+  border-radius: 26px;
+  box-shadow: 0 9px 0 var(--ink);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.race .opt {
+  font-size: clamp(44px, 9.5vh, 140px);
+}
+
+.opt:active {
+  transform: translateY(5px);
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.opt.blank {
+  background: rgba(255, 255, 255, 0.55);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.opt.deal {
+  animation: deal 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes deal {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.opt.is-right {
+  background: #c9f7c1;
+  border-color: var(--green);
+  box-shadow: 0 9px 0 var(--green);
+  color: var(--green);
+  animation: rightPop 0.5s ease-out;
+}
+
+@keyframes rightPop {
+  40% {
+    transform: scale(1.12);
+  }
+}
+
+.opt.is-wrong {
+  background: #ffd0cb;
+  border-color: #d33a35;
+  box-shadow: 0 9px 0 #d33a35;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  15%,
+  55% {
+    transform: translateX(-14px) rotate(-4deg);
+  }
+  35%,
+  75% {
+    transform: translateX(14px) rotate(4deg);
+  }
+}
+
+.panel.locked .options {
+  pointer-events: none;
+}
+
+.panel.locked .opt:not(.is-right):not(.is-wrong):not(.blank) {
+  opacity: 0.5;
+}
+
+.float-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.float {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  font-size: clamp(48px, 9vh, 110px);
+  font-weight: 900;
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  animation: floatUp 0.9s ease-out forwards;
+}
+
+.float.ok {
+  color: #4fd36a;
+}
+
+.float.bad {
+  color: #ff5a50;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translate(-50%, 0) scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -18vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* ---------- 比賽場景 ---------- */
+
+.center {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 6px solid var(--ink);
+  border-radius: 30px;
+  background: #a5dcff;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.14);
+}
+
+.stage,
+.stage svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stage svg {
+  display: block;
+}
+
+.scene .kid,
+.scene .lean,
+.scene .leg,
+.scene .arm,
+.scene .pony,
+.scene .feet,
+.scene .rib-a,
+.scene .rib-b {
+  transform-box: fill-box;
+}
+
+.scene .kid,
+.scene .lean {
+  transform-origin: 50% 100%;
+}
+
+.scene .leg,
+.scene .arm {
+  transform-origin: 50% 0%;
+}
+
+.scene .pony {
+  transform-origin: 90% 15%;
+}
+
+.m-oops,
+.m-cheer {
+  display: none;
+}
+
+.team.cheer .m-happy {
+  display: none;
+}
+
+.team.cheer .m-cheer {
+  display: inline;
+}
+
+.oops .m-happy,
+.team.stagger .m-happy,
+.team.lose .m-happy,
+.team-run.stumble .m-happy {
+  display: none;
+}
+
+.oops .m-oops,
+.team.stagger .m-oops,
+.team.lose .m-oops,
+.team-run.stumble .m-oops {
+  display: inline;
+}
+
+.cloud {
+  animation: drift 26s linear infinite alternate;
+}
+
+.cloud.slow {
+  animation-duration: 38s;
+}
+
+@keyframes drift {
+  to {
+    transform: translateX(90px);
+  }
+}
+
+.sun-rays {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: spin 14s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.flaglets path {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: flutter 1.4s ease-in-out infinite alternate;
+}
+
+.flaglets path:nth-child(even) {
+  animation-delay: -0.7s;
+}
+
+@keyframes flutter {
+  to {
+    transform: rotate(8deg);
+  }
+}
+
+/* 拔河 */
+
+.tug .lean {
+  transform: rotate(-8deg);
+}
+
+.live .tug .lean {
+  animation: tugLean 0.9s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes tugLean {
+  from {
+    transform: rotate(-9deg);
+  }
+  to {
+    transform: rotate(-17deg);
+  }
+}
+
+.live .tug .feet {
+  animation: slip 0.45s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes slip {
+  from {
+    transform: translateX(-4px);
+  }
+  to {
+    transform: translateX(4px);
+  }
+}
+
+.live .rope-wobble {
+  animation: ropeShake 0.14s linear infinite alternate;
+}
+
+@keyframes ropeShake {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(2px);
+  }
+}
+
+.live .team.cheer.red {
+  animation: pullLeft 0.95s ease-out;
+}
+
+.live .team.cheer.blue {
+  animation: pullRight 0.95s ease-out;
+}
+
+@keyframes pullLeft {
+  0% {
+    transform: translateX(0);
+  }
+  38% {
+    transform: translateX(-52px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pullRight {
+  0% {
+    transform: translateX(0);
+  }
+  38% {
+    transform: translateX(52px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.live .team.cheer .tug .lean {
+  animation: cheerPull 0.95s ease-out;
+}
+
+@keyframes cheerPull {
+  0% {
+    transform: rotate(-10deg) translateY(0);
+  }
+  32% {
+    transform: rotate(-38deg) translateY(6px);
+  }
+  58% {
+    transform: rotate(-16deg) translateY(-26px);
+  }
+  78% {
+    transform: rotate(-30deg) translateY(0);
+  }
+  100% {
+    transform: rotate(-12deg) translateY(0);
+  }
+}
+
+.live .team.heave .tug .lean {
+  animation: heave 0.55s ease-out;
+}
+
+@keyframes heave {
+  0% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(-30deg);
+  }
+  100% {
+    transform: rotate(-14deg);
+  }
+}
+
+.live .team.stagger .tug .lean {
+  animation: stagger 0.6s ease-out;
+}
+
+@keyframes stagger {
+  0% {
+    transform: rotate(-12deg);
+  }
+  35% {
+    transform: rotate(14deg);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+#tugMove {
+  transition: transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+#tugMove.finale {
+  transition: transform 1.6s cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+.over .tug .lean,
+.over .tug .feet {
+  animation: none;
+}
+
+.over .tug .lean {
+  transform: rotate(-12deg);
+}
+
+.over .team.win .tug .lean {
+  transform: rotate(-20deg);
+}
+
+.over .team.win .kid {
+  animation: jump 0.42s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+.over .team.lose .tug .lean {
+  transform: rotate(24deg);
+  transition: transform 0.7s ease-in 0.6s;
+}
+
+@keyframes jump {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-36px);
+  }
+}
+
+/* 賽跑 */
+
+.run .lean {
+  transform: rotate(0deg);
+}
+
+.live .run .lean,
+.over .team-run.dash .run .lean {
+  transform: rotate(9deg);
+}
+
+.live .run .kid,
+.over .team-run.dash .run .kid {
+  animation: bob 0.18s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-7px);
+  }
+}
+
+.live .run .leg-a,
+.over .team-run.dash .run .leg-a {
+  animation: legSwing 0.36s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+.live .run .leg-b,
+.over .team-run.dash .run .leg-b {
+  animation: legSwing 0.36s ease-in-out infinite alternate-reverse;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes legSwing {
+  from {
+    transform: rotate(-36deg);
+  }
+  to {
+    transform: rotate(36deg);
+  }
+}
+
+.live .run .arm-a,
+.over .team-run.dash .run .arm-a {
+  animation: armSwing 0.36s ease-in-out infinite alternate-reverse;
+  animation-delay: var(--d, 0s);
+}
+
+.live .run .arm-b,
+.over .team-run.dash .run .arm-b {
+  animation: armSwing 0.36s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes armSwing {
+  from {
+    transform: rotate(-55deg);
+  }
+  to {
+    transform: rotate(55deg);
+  }
+}
+
+.live .run .pony,
+.over .team-run.dash .run .pony {
+  animation: pony 0.18s ease-in-out infinite alternate;
+}
+
+@keyframes pony {
+  from {
+    transform: rotate(-8deg);
+  }
+  to {
+    transform: rotate(12deg);
+  }
+}
+
+.live .team-run.stumble .run .lean {
+  animation: stumble 0.6s ease-out;
+}
+
+@keyframes stumble {
+  0% {
+    transform: rotate(9deg);
+  }
+  30% {
+    transform: rotate(-24deg);
+  }
+  65% {
+    transform: rotate(-6deg);
+  }
+  100% {
+    transform: rotate(9deg);
+  }
+}
+
+.team-run {
+  transition: transform 0.55s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.team-run.finale {
+  transition: transform 1.5s cubic-bezier(0.5, 0, 0.4, 1);
+}
+
+.speed {
+  opacity: 0;
+}
+
+.team-run.boost .speed {
+  animation: speed 0.6s ease-out;
+}
+
+@keyframes speed {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+.over .run .kid,
+.over .run .leg,
+.over .run .arm,
+.over .run .pony {
+  animation: none;
+}
+
+.over .team-run.win .run .kid {
+  animation: jump 0.42s ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+.rib-a,
+.rib-b {
+  transition: transform 0.7s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.rib-a {
+  transform-origin: 50% 0%;
+}
+
+.rib-b {
+  transform-origin: 50% 100%;
+}
+
+.ribbon.broken .rib-a {
+  transform: rotate(-80deg);
+}
+
+.ribbon.broken .rib-b {
+  transform: rotate(80deg);
+}
+
+.crowd circle {
+  animation: cheer 0.6s ease-in-out infinite alternate;
+}
+
+.crowd g:nth-child(2) circle {
+  animation-delay: -0.2s;
+}
+
+.crowd g:nth-child(3) circle {
+  animation-delay: -0.4s;
+}
+
+@keyframes cheer {
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+/* 疊層 */
+
+.gain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gain span {
+  position: absolute;
+  top: 8%;
+  font-size: clamp(84px, 18vh, 200px);
+  font-weight: 900;
+  line-height: 1;
+  color: #4fd36a;
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+  animation: gainPop 1.15s ease-out forwards;
+}
+
+.gain span.red {
+  left: 6%;
+}
+
+.gain span.blue {
+  right: 6%;
+}
+
+@keyframes gainPop {
+  0% {
+    transform: scale(0.2) translateY(24px);
+    opacity: 0;
+  }
+  18% {
+    transform: scale(1.2) translateY(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(-36px);
+    opacity: 0;
+  }
+}
+
+.banner {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  z-index: 3;
+  font-size: clamp(40px, 7.4vh, 88px);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  padding: 0.12em 0.8em 0.12em 0.9em;
+  border: 6px solid var(--ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 0 var(--ink);
+  opacity: 0;
+  transform: translate(-50%, -30px) scale(0.6);
+  pointer-events: none;
+}
+
+.banner.red {
+  background: var(--red);
+  color: #fff;
+}
+
+.banner.blue {
+  background: var(--blue);
+  color: #fff;
+}
+
+.banner.draw {
+  background: var(--gold);
+}
+
+.banner.show {
+  animation: bannerIn 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) forwards;
+}
+
+@keyframes bannerIn {
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.ready-count {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  place-items: center;
+  align-content: center;
+  background: rgba(43, 38, 34, 0.55);
+  pointer-events: auto;
+}
+
+.ready-count.show {
+  display: grid;
+}
+
+.ready-count span {
+  font-size: clamp(180px, 42vh, 420px);
+  font-weight: 900;
+  color: #fff;
+  -webkit-text-stroke: 10px var(--ink);
+  paint-order: stroke fill;
+  animation: readyPop 0.95s ease-out forwards;
+}
+
+.ready-count em {
+  position: absolute;
+  bottom: 12%;
+  font-style: normal;
+  font-size: clamp(40px, 7vh, 84px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  background: var(--gold);
+  color: var(--ink);
+  border: 6px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.05em 0.7em 0.05em 0.9em;
+}
+
+@keyframes readyPop {
+  0% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  25% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti i {
+  position: absolute;
+  top: -6%;
+  width: 14px;
+  height: 20px;
+  border-radius: 3px;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(760deg);
+  }
+}
+
+.pause-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  place-items: center;
+  background: rgba(30, 30, 45, 0.55);
+}
+
+.pause-veil span {
+  font-size: clamp(80px, 18vh, 200px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #fff;
+  -webkit-text-stroke: 6px var(--ink);
+  paint-order: stroke fill;
+}
+
+#game.paused .pause-veil {
+  display: grid;
+}
+
+#game.paused *,
+#game.paused *::before,
+#game.paused *::after {
+  animation-play-state: paused !important;
+}
+
+/* ---------- 總結 ---------- */
+
+#summary {
+  align-items: center;
+  justify-content: center;
+}
+
+.sum-wrap {
+  width: min(94vw, 1500px);
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6vh;
+}
+
+.sum-game {
+  margin: 0;
+  font-size: clamp(22px, 3.4vh, 38px);
+  font-weight: 900;
+  background: #fff;
+  border: 4px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.05em 1.1em 0.05em 1.3em;
+  letter-spacing: 0.2em;
+}
+
+.sum-result {
+  margin: 0;
+  font-size: clamp(48px, 9vh, 104px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #fff;
+  -webkit-text-stroke: 4px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 7px 0 var(--ink);
+  animation: bannerPop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.sum-result.red {
+  color: var(--red);
+}
+
+.sum-result.blue {
+  color: var(--blue);
+}
+
+.sum-result.draw {
+  color: var(--gold);
+}
+
+@keyframes bannerPop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+.sum-cols {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2vw;
+}
+
+.sum-team {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  padding: 1.6vh 1.6vw;
+  background: var(--team-soft);
+  border: 6px solid var(--team);
+  border-radius: 28px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.14);
+}
+
+.sum-team.red {
+  --team: var(--red);
+  --team-soft: var(--red-soft);
+}
+
+.sum-team.blue {
+  --team: var(--blue);
+  --team-soft: var(--blue-soft);
+}
+
+.sum-team.champ {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 6px var(--team), 0 10px 0 6px rgba(0, 0, 0, 0.14);
+}
+
+.sum-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1vw;
+  margin-bottom: 1vh;
+}
+
+.sum-head .team-name {
+  font-size: clamp(26px, 4.2vh, 48px);
+  font-weight: 900;
+}
+
+.sum-head .crown {
+  width: clamp(44px, 7vh, 80px);
+  animation: crown 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes crown {
+  to {
+    transform: translateY(-6px) rotate(6deg);
+  }
+}
+
+.sum-head .score {
+  font-size: clamp(34px, 6vh, 70px);
+  font-weight: 900;
+}
+
+.sum-block h3 {
+  margin: 1.2vh 0 0.8vh;
+  font-size: clamp(22px, 3.4vh, 38px);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.sum-block .count {
+  min-width: 1.8em;
+  text-align: center;
+  border-radius: 999px;
+  color: #fff;
+  padding: 0 0.4em;
+  border: 3px solid var(--ink);
+}
+
+.sum-block.ok h3 {
+  color: var(--green);
+}
+
+.sum-block.ok .count {
+  background: var(--green);
+}
+
+.sum-block.bad h3 {
+  color: #d33a35;
+}
+
+.sum-block.bad .count {
+  background: #d33a35;
+}
+
+.sum-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9vh 0.8vw;
+}
+
+.sum-list li {
+  font-family: var(--kai);
+  font-size: clamp(84px, 16vh, 168px);
+  line-height: 1.05;
+  background: #fff;
+  border: 6px solid var(--ink);
+  border-radius: 22px;
+  padding: 0.02em 0.22em;
+  animation: deal 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.sum-team.dense .sum-list li {
+  font-size: clamp(56px, 9vh, 104px);
+}
+
+.sum-team.dense .sum-block.bad .sum-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.sum-list li.empty {
+  font-family: var(--ui);
+  color: #9a8f86;
+  border-style: dashed;
+}
+
+.sum-team .sum-list li,
+.sum-block.ok li {
+  color: var(--green);
+}
+
+.sum-block.bad .sum-list {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.sum-block.bad li {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  align-self: flex-start;
+}
+
+.sum-block.bad .picked {
+  color: #d33a35;
+  text-decoration: line-through;
+  text-decoration-thickness: 4px;
+}
+
+.sum-block.bad .fix {
+  font-family: var(--ui);
+  font-size: 0.62em;
+  font-weight: 800;
+}
+
+.sum-block.bad .fix b {
+  font-family: var(--kai);
+  font-size: 1.45em;
+  color: var(--green);
+}
+
+.sum-actions {
+  display: flex;
+  gap: 2vw;
+}
+
+.big-btn {
+  font-size: clamp(26px, 4.4vh, 50px);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 0.3em 1.3em;
+  border: 5px solid var(--ink);
+  border-radius: 22px;
+  background: var(--gold);
+  box-shadow: 0 8px 0 var(--ink);
+}
+
+.big-btn.ghost {
+  background: #fff;
+}
+
+.big-btn:active {
+  transform: translateY(5px);
+  box-shadow: 0 3px 0 var(--ink);
+}
