@@ -719,18 +719,12 @@
     $('sumCols').innerHTML = ['red', 'blue']
       .map((id) => {
         const t = S.teams[id];
-        const seen = new Set();
-        const chars = [];
-        t.log.forEach((x) => {
-          if (!x.ok || seen.has(x.target)) return;
-          seen.add(x.target);
-          chars.push(x.target);
-        });
-        const rightItems = chars
-          .map((ch, i) => `<li style="animation-delay:${i * 40}ms">${esc(ch)}</li>`)
+        const right = t.log.filter((x) => x.ok);
+        const rightItems = right
+          .map((x, i) => `<li style="animation-delay:${i * 40}ms">${esc(x.target)}</li>`)
           .join('');
         return (
-          `<article class="sum-team ${id}${winner === id ? ' champ' : ''}${chars.length > 10 ? ' dense' : ''}">` +
+          `<article class="sum-team ${id}${winner === id ? ' champ' : ''}${right.length > 10 ? ' dense' : ''}">` +
           `<div class="sum-head"><span class="team-name">${TEAM_NAME[id]}</span>${winner === id ? crownSVG : ''}<span class="score">${fmtScore(t.score)}</span></div>` +
           `<ul class="sum-list">${rightItems}</ul>` +
           `</article>`
