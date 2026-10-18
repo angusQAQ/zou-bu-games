@@ -65,18 +65,22 @@
     };
     const tone = (freq, at, dur, type = 'triangle', vol = 0.22, slideTo = 0) => {
       if (muted || !ctx) return;
-      const t = ctx.currentTime + at;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, t);
-      if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
-      gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(vol, t + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + dur + 0.05);
+      try {
+        const t = ctx.currentTime + at;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), t + dur);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.05);
+      } catch (e) {
+        /* 音效失敗不影響作答 */
+      }
     };
     return {
       unlock,
@@ -404,12 +408,18 @@
     const other = otherOf(team);
     const avoid = other.q ? other.q.target : null;
     if (S.game === 'tug') {
-      const target = pick(ZOU_CHARS.filter((c) => c !== avoid && c !== team.prev));
+      let pool = ZOU_CHARS.filter((c) => c !== avoid && c !== team.prev);
+      if (!pool.length) pool = ZOU_CHARS.filter((c) => c !== avoid);
+      if (!pool.length) pool = ZOU_CHARS;
+      const target = pick(pool);
       const look = pick(LOOKALIKES);
-      const rest = shuffle(DISTRACTORS.filter((c) => c !== look)).slice(0, 2);
+      const rest = shuffle(DISTRACTORS.filter((c) => c !== look && c !== target)).slice(0, 2);
       team.q = { target, answer: target, options: shuffle([target, look, ...rest]) };
     } else {
-      const b = pick(BUILDS.filter((x) => x.char !== avoid && x.char !== team.prev));
+      let pool = BUILDS.filter((x) => x.char !== avoid && x.char !== team.prev);
+      if (!pool.length) pool = BUILDS.filter((x) => x.char !== avoid);
+      if (!pool.length) pool = BUILDS;
+      const b = pick(pool);
       team.q = { target: b.char, answer: b.part, options: shuffle([b.part, ...b.wrong]) };
     }
     team.prev = team.q.target;
@@ -452,13 +462,12 @@
       b.className = 'opt deal';
       b.textContent = value;
       b.style.animationDelay = `${i * 45}ms`;
-      b.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
+      const press = (e) => {
+        if (e.type === 'pointerdown') e.preventDefault();
         choose(team, b, value);
-      });
-      b.addEventListener('click', (e) => {
-        if (e.detail === 0) choose(team, b, value);
-      });
+      };
+      b.addEventListener('pointerdown', press);
+      b.addEventListener('click', press);
       opts.appendChild(b);
     });
     p.classList.remove('locked');
@@ -466,9 +475,13 @@
 
   const choose = (team, btn, value) => {
     if (S.phase !== 'play' || clock.paused || team.busy || btn.disabled) return;
-    team.busy = true;
-    team.panel.classList.add('locked');
     const ok = value === team.q.answer;
+    if (ok) {
+      team.busy = true;
+      team.panel.classList.add('locked');
+    } else {
+      btn.disabled = true;
+    }
     team.log.push({ ok, target: team.q.target, answer: team.q.answer, chosen: value });
     team.score += ok ? 1 : -1;
 
@@ -483,25 +496,35 @@
     btn.classList.remove('deal');
     btn.style.animationDelay = '';
     btn.classList.add(ok ? 'is-right' : 'is-wrong');
-    if (!ok) btn.disabled = true;
+
+    if (!ok) return;
 
     let wait = 700;
-    if (ok && S.game === 'race') {
+    if (S.game === 'race') {
       const prompt = team.panel.querySelector('.prompt');
-      prompt.querySelector('.slot').textContent = team.q.answer;
-      prompt.classList.add('merge');
-      after(480, () => {
-        prompt.querySelector('.result').textContent = team.q.target;
-        prompt.classList.add('reveal');
-      });
+      if (prompt) {
+        prompt.querySelector('.slot').textContent = team.q.answer;
+        prompt.classList.add('merge');
+        window.setTimeout(() => {
+          if (!prompt.isConnected) return;
+          prompt.querySelector('.result').textContent = team.q.target;
+          prompt.classList.add('reveal');
+        }, 480);
+      }
       wait = 1450;
     }
-    after(wait, () => {
+    window.setTimeout(() => {
       team.busy = false;
-      if (S.phase !== 'play') return;
-      if (ok) deal(team);
-      else team.panel.classList.remove('locked');
-    });
+      if (S.phase !== 'play') {
+        team.panel.classList.remove('locked');
+        return;
+      }
+      try {
+        deal(team);
+      } catch (e) {
+        team.panel.classList.remove('locked');
+      }
+    }, wait);
   };
 
   // ---------- 畫面更新 ----------

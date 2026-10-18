@@ -506,6 +506,7 @@ button {
   position: absolute;
   left: 50%;
   top: 46%;
+  pointer-events: none;
   font-size: clamp(48px, 9vh, 110px);
   font-weight: 900;
   -webkit-text-stroke: 3px var(--ink);
@@ -1016,6 +1017,7 @@ button {
 .gain span {
   position: absolute;
   top: 8%;
+  pointer-events: none;
   font-size: clamp(84px, 18vh, 200px);
   font-weight: 900;
   line-height: 1;
