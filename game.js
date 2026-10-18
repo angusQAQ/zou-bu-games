@@ -626,24 +626,6 @@
     setPaused(false);
 
     show('game');
-    showHow(game);
-  };
-
-  const HOW = {
-    tug: ['四個字裡，選出含有「走」部的字。', '答對，本隊往後拉，並加一分。', '答錯可以再選，選對才換下一題。'],
-    race: ['題目是「走＋？」，選出正確的部件。', '答對，本隊向前跑，並看到組成的字。', '答錯可以再選，選對才換下一題。'],
-  };
-
-  const showHow = (game) => {
-    S.phase = 'how';
-    $('howTitle').textContent = game === 'tug' ? '拔河' : '賽跑';
-    $('howLines').innerHTML = HOW[game].map((line) => `<li>${line}</li>`).join('');
-    $('how').classList.add('show');
-  };
-
-  const startCountdown = () => {
-    $('how').classList.remove('show');
-    S.phase = 'ready';
     startClock();
     [3, 2, 1].forEach((n, i) => {
       after(i * 1000, () => {
@@ -737,12 +719,18 @@
     $('sumCols').innerHTML = ['red', 'blue']
       .map((id) => {
         const t = S.teams[id];
-        const right = t.log.filter((x) => x.ok);
-        const rightItems = right
-          .map((x, i) => `<li style="animation-delay:${i * 40}ms">${esc(x.target)}</li>`)
+        const seen = new Set();
+        const chars = [];
+        t.log.forEach((x) => {
+          if (!x.ok || seen.has(x.target)) return;
+          seen.add(x.target);
+          chars.push(x.target);
+        });
+        const rightItems = chars
+          .map((ch, i) => `<li style="animation-delay:${i * 40}ms">${esc(ch)}</li>`)
           .join('');
         return (
-          `<article class="sum-team ${id}${winner === id ? ' champ' : ''}${right.length > 10 ? ' dense' : ''}">` +
+          `<article class="sum-team ${id}${winner === id ? ' champ' : ''}${chars.length > 10 ? ' dense' : ''}">` +
           `<div class="sum-head"><span class="team-name">${TEAM_NAME[id]}</span>${winner === id ? crownSVG : ''}<span class="score">${fmtScore(t.score)}</span></div>` +
           `<ul class="sum-list">${rightItems}</ul>` +
           `</article>`
@@ -762,7 +750,6 @@
 
   const goMenu = () => {
     stopClock();
-    $('how').classList.remove('show');
     S.phase = 'idle';
     setPaused(false);
     show('menu');
@@ -796,14 +783,7 @@
     btn.classList.toggle('on', m);
   });
 
-  $('howStart').addEventListener('click', () => {
-    if (S.phase === 'how') startCountdown();
-  });
-
-  $('btnBack').addEventListener('click', () => {
-    $('how').classList.remove('show');
-    goMenu();
-  });
+  $('btnBack').addEventListener('click', goMenu);
   $('btnAgain').addEventListener('click', () => startGame(S.game));
   $('btnHome').addEventListener('click', goMenu);
 })();

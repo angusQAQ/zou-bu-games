@@ -1095,60 +1095,6 @@ button {
   }
 }
 
-.how {
-  position: absolute;
-  inset: 0;
-  z-index: 25;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2.4vh;
-  padding: 3vh 4vw;
-  background: rgba(255, 244, 217, 0.97);
-}
-
-.how.show {
-  display: flex;
-}
-
-.how-title {
-  margin: 0;
-  font-size: clamp(64px, 12vh, 140px);
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  color: #fff;
-  -webkit-text-stroke: 4px var(--ink);
-  paint-order: stroke fill;
-  text-shadow: 0 6px 0 var(--ink);
-}
-
-.how-lines {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.6vh;
-  width: min(92%, 1100px);
-}
-
-.how-lines li {
-  font-size: clamp(32px, 5.6vh, 64px);
-  font-weight: 900;
-  line-height: 1.35;
-  text-align: center;
-  background: #fff;
-  border: 6px solid var(--ink);
-  border-radius: 28px;
-  padding: 0.28em 0.5em;
-}
-
-.how .big-btn {
-  margin-top: 1vh;
-  font-size: clamp(36px, 6vh, 72px);
-}
-
 .ready-count {
   position: absolute;
   inset: 0;
