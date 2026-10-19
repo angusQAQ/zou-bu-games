@@ -505,8 +505,8 @@
       team.score += 1;
       updateScores(team);
       showGain(team);
+      moveStage();
     }
-    moveStage();
     reactStage(team, ok);
     if (ok) Sound.right();
     else Sound.wrong();
