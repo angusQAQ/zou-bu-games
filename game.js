@@ -501,11 +501,11 @@
       btn.disabled = true;
     }
     team.log.push({ ok, target: team.q.target, answer: team.q.answer, chosen: value });
-    team.score += ok ? 1 : -1;
-
-    updateScores(team);
-    if (ok) showGain(team);
-    else floatScore(team);
+    if (ok) {
+      team.score += 1;
+      updateScores(team);
+      showGain(team);
+    }
     moveStage();
     reactStage(team, ok);
     if (ok) Sound.right();
@@ -553,15 +553,6 @@
     red.textContent = fmtScore(S.teams.red.score);
     blue.textContent = fmtScore(S.teams.blue.score);
     if (changed) restart(changed.id === 'red' ? red : blue, 'bump');
-  };
-
-  const floatScore = (team) => {
-    const layer = team.panel.querySelector('.float-layer');
-    const el = document.createElement('span');
-    el.className = 'float bad';
-    el.textContent = '\u22121';
-    layer.appendChild(el);
-    setTimeout(() => el.remove(), 1000);
   };
 
   const showGain = (team) => {
