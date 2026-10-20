@@ -503,10 +503,13 @@
     team.log.push({ ok, target: team.q.target, answer: team.q.answer, chosen: value });
     if (ok) {
       team.score += 1;
-      updateScores(team);
       showGain(team);
-      moveStage();
+    } else {
+      team.score -= 1;
+      floatScore(team);
     }
+    updateScores(team);
+    moveStage();
     reactStage(team, ok);
     if (ok) Sound.right();
     else Sound.wrong();
@@ -553,6 +556,15 @@
     red.textContent = fmtScore(S.teams.red.score);
     blue.textContent = fmtScore(S.teams.blue.score);
     if (changed) restart(changed.id === 'red' ? red : blue, 'bump');
+  };
+
+  const floatScore = (team) => {
+    const layer = team.panel.querySelector('.float-layer');
+    const el = document.createElement('span');
+    el.className = 'float bad';
+    el.textContent = '\u22121';
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
   };
 
   const showGain = (team) => {
