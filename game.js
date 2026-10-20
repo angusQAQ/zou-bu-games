@@ -12,16 +12,13 @@
     '連', '迎', '追', '遊', '運', '選', '速', '造', '建', '延',
   ];
   const BUILDS = [
-    { char: '起', part: '\u5DF3', wrong: ['\u5DF1', '\u5DF2', '巴'] },
-    { char: '趕', part: '旱', wrong: ['早', '\u5E72', '午'] },
     { char: '超', part: '召', wrong: ['刀', '口', '力'] },
+    { char: '趕', part: '旱', wrong: ['早', '\u5E72', '午'] },
     { char: '越', part: '\u6209', wrong: ['\u620A', '\u620C', '\u620D'] },
     { char: '趣', part: '取', wrong: ['耳', '又', '\u53CC'] },
-    { char: '赴', part: '卜', wrong: ['十', '下', '上'] },
-    { char: '趁', part: '\u3431', wrong: ['\u53C3', '\u5F61', '\u5C14'] },
+    { char: '起', part: '\u5DF3', wrong: ['\u5DF1', '\u5DF2', '巴'] },
     { char: '趙', part: '肖', wrong: ['小', '月', '有'] },
-    { char: '趟', part: '尚', wrong: ['向', '同', '周'] },
-    { char: '趨', part: '芻', wrong: ['勿', '匆', '勾'] },
+    { char: '趁', part: '\u3431', wrong: ['\u53C3', '\u5F61', '\u5C14'] },
   ];
   const ZOU_CHARS = BUILDS.map((b) => b.char);
 
